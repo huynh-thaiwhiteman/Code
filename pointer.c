@@ -1,10 +1,8 @@
 #include <stdio.h>
-
 void funcX(char a)
 {
     a = 15;
 }
-
 int main()
 {
     char a = 10;
@@ -16,4 +14,3 @@ int main()
 
     return 0;
 }    
-
