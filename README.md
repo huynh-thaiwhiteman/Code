@@ -19,7 +19,9 @@ của 1 trong 2 số.
 
 /*Ham function
 1.Một đoạn chương trình yêu cầu swap giá trị a và b, c và d.
+
 2.Một đoạn chương trình yêu câù void swap() giá trị a và b, c và d.
+
 Ex4:Hàm C_to_F() chuyển đổi từ độ C sang độ F
 
 Bài tập 1: Viết hàm có một tham số là số nguyên n ≥ 0, in ra màn hình tất cả các số
@@ -36,5 +38,7 @@ phải là số dương thì trả về giá trị -1.
 
 /*structure
 Ex1: struct
+
 Ex2: struct lồng nhau
+
 Ex3: struct làm tham số cho hàm
