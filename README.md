@@ -16,4 +16,5 @@ Bài tập 6: Viết hàm vào 2 đối số là địa chỉ của 2 số nguy�
 của số nguyên có giá trị lớn hơn, nếu 2 số có giá trị bằng nhau thì trả về địa chỉ
 của 1 trong 2 số.
 */
+
 /*
