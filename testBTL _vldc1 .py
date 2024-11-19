@@ -7,22 +7,23 @@ n = int(input("Nhập số điện tích điểm: "))
 
 # Nhập tọa độ và điện tích của các điện tích điểm
 def input_charges(n):
-x = np.zeros(n)
-y = np.zeros(n)
-q = np.zeros(n)
+    x = np.zeros(n)
+    y = np.zeros(n)
+    q = np.zeros(n)
 
-print("Nhập tọa độ và điện tích của các điện tích điểm:")
-for i in range(n):
+    print("Nhập tọa độ và điện tích của các điện tích điểm:")
+    for i in range(n):
     x[i] = float(input(f"Nhập x{i+1}: "))
     y[i] = float(input(f"Nhập y{i+1}: "))
     q[i] = float(input(f"Nhập q{i+1}: "))
     return x, y, q
 
 # Nhập số lượng điện tích điểm
-n = int(input("Nhập số điện tích điểm: "))
-x, y, q = input_charges(n)
+    n = int(input("Nhập số điện tích điểm: "))
+    x, y, q = input_charges(n)
 
 # Nhập tọa độ và điện tích của điện tích điểm qo
+def input_qo():
 xo = float(input("Nhập xo(m): "))
 yo = float(input("Nhập yo(m): "))
 qo = float(input("Nhập qo(Coulumb): "))
@@ -77,5 +78,5 @@ plt.quiver(xo, yo, F_x, F_y, angles="xy", scale_units="xy", scale=1, color="red"
 # Hiển thị chú thích và đồ thị
 plt.legend()
 plt.grid()
-plt.show()
 plt.axis("equal")  # Đảm bảo tỷ lệ x:y trên đồ thị
+plt.show()
