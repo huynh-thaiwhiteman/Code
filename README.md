@@ -42,3 +42,4 @@ Ex1: struct
 Ex2: struct lồng nhau
 
 Ex3: struct làm tham số cho hàm
+*/
