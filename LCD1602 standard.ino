@@ -1,56 +1,23 @@
-#include <EEPROM.h>
-const int buttonPin = 8;    
-const int ledPin = 4;       
-int ledState;               
-int buttonState;             
-int lastButtonState = LOW;  
-long lastDebounceTime = 0;  
-long debounceDelay = 50;   
+#include <LiquidCrystal.h>
+#define SENSOR_PIN A0
+float voltage = 0;
+float sensor = 0;
+float celisus = 0;
+float fahrenheit = 0;
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void setup() {
-  // set input and output
-  pinMode(buttonPin, INPUT);
-  pinMode(ledPin, OUTPUT);
-
-  digitalWrite(ledPin, ledState);
-
-  Serial.begin (9600);
-
-  checkLedState(); 
+  lcd.begin(16, 2);
+  lcd.setCursor(3, 0);
+  lcd.print("NHIET DO");
+  
 }
-
 void loop() {
-  int reading = digitalRead(buttonPin);
-  if(reading != lastButtonState) {
-    lastDebounceTime = millis();
-  }
+  sensor = analogRead(SENSOR_PIN);
+  voltage = (sensor*5000)/1024;
+  voltage = voltage-495;
+  celisus = voltage/10;
+  lcd.setCursor(5, 1);
+  lcd.print(celisus);
 
-  if((millis() - lastDebounceTime) > debounceDelay) {
-    if(reading != buttonState) {
-      buttonState = reading;
-
-      // only toggle the LED if the new button state is HIGH
-      if(buttonState == HIGH) {
-        ledState = !ledState;
-      }
-    }
-  }
-
-
-  digitalWrite(ledPin, ledState);
-  EEPROM.update(0, ledState);
-  lastButtonState = reading;
-}
-
-void checkLedState() {
-   Serial.println("LED status after restart: ");
-   ledState = EEPROM.read(0);
-   if(ledState == 1) {
-    Serial.println ("ON");
-    digitalWrite(ledPin, HIGH);
-   } 
-   if(ledState == 0) {
-    Serial.println ("OFF");
-    digitalWrite(ledPin, LOW);
-   }
 }
