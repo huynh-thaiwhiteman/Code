@@ -1,0 +1,73 @@
+clc;
+clear;
+close all;
+
+% Hằng số Coulomb
+k = 9e9; % Nm²/C²
+
+% Nhập số lượng điện tích điểm
+n = input('Nhập số lượng điện tích điểm: ');
+
+% Khởi tạo tọa độ và giá trị điện tích
+positions = zeros(n, 2); % Lưu tọa độ (x, y)
+charges = zeros(n, 1);   % Lưu giá trị điện tích
+
+% Nhập dữ liệu từ người dùng
+for i = 1:n
+    fprintf('Nhập tọa độ (x, y) và điện tích của điểm thứ %d:\n', i);
+    positions(i, 1) = input('  x: ');
+    positions(i, 2) = input('  y: ');
+    charges(i) = input('  Điện tích (C): ');
+end
+
+% Tính các thành phần lực
+Fx = sym(zeros(n, 1)); % Thành phần lực theo trục x
+Fy = sym(zeros(n, 1)); % Thành phần lực theo trục y
+
+% Duyệt qua từng điện tích q0
+syms x y real; % Biến symbolic cho tọa độ
+for i = 1:n
+    % Lấy tọa độ và điện tích của q0
+    x0 = positions(i, 1);
+    y0 = positions(i, 2);
+    q0 = charges(i);
+    
+    % Tính lực từ các điện tích còn lại tác dụng lên q0
+    for j = 1:n
+        if i ~= j
+            % Lấy tọa độ và điện tích của qj
+            xj = positions(j, 1);
+            yj = positions(j, 2);
+            qj = charges(j);
+            
+            % Khoảng cách giữa q0 và qj
+            r = sqrt((xj - x0)^2 + (yj - y0)^2);
+            
+            % Thành phần lực
+            Fx(i) = Fx(i) + k * q0 * qj * (xj - x0) / r^3;
+            Fy(i) = Fy(i) + k * q0 * qj * (yj - y0) / r^3;
+        end
+    end
+end
+
+% Hiển thị kết quả
+disp('Các thành phần lực Fx và Fy tại từng điểm:');
+for i = 1:n
+    fprintf('Điểm %d: Fx = %s, Fy = %s\n', i, Fx(i), Fy(i));
+end
+
+% Vẽ biểu đồ vector lực
+figure;
+hold on;
+grid on;
+axis equal;
+xlabel('X (m)');
+ylabel('Y (m)');
+title('Biểu diễn lực tĩnh điện');
+quiver(positions(:, 1), positions(:, 2), double(Fx), double(Fy), 'r', 'LineWidth', 1.5);
+scatter(positions(:, 1), positions(:, 2), 50, 'b', 'filled');
+legend('Lực tĩnh điện', 'Điện tích điểm');
+hold off;
+
+% Giữ cửa sổ đồ thị mở
+waitfor(gcf);
