@@ -16,7 +16,7 @@ void loop()
 {
     unsigned long duration;  // Khai báo biến đo thời gian //
     int distance;            // Khai báo biến lưu khoảng cách //
-    duration = pulseln(echo, HIGH);     // Đo độ rộng xung HIGH của chân echo //
+    duration = pulseIn(echo, HIGH);     // Đo độ rộng xung HIGH của chân echo //
     distance = int(duration/2/29.412);  // Tính khoảng cách đến vật //
 
 //Phát xung từ chân trig //
@@ -26,13 +26,12 @@ void loop()
     delay(1000);
     digitalWrite(trig,0);  // tắt chân trig
 
-if (distance < 50) {digitalWrite(led1,1);}
-else digitalWrite(led1,0);}
-if (distance > 50 && distance < 100) {digitalWrite(led2,1);}
-else digitalWrite(led2,0);}  
-if (distance > 100) {digitalWrite(led3,1);}
-else digitalWrite(led3,0);}
-
+if (distance < 50 ){digitalWrite(led1,1);}
+    else {digitalWrite(led1,0);}
+    if (distance > 50 && distance < 100 ){digitalWrite(led2,1);}
+    else {digitalWrite(led2,0);}
+    if (distance > 100 ){digitalWrite(led3,1);}
+    else {digitalWrite(led3,0);}
 //In kết quả ra Serial Monitor//
 Serial.print(distance);
 Serial.println("cm");
