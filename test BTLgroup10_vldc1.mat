@@ -5,69 +5,120 @@ close all;
 % Hằng số Coulomb
 k = 9e9; % Nm²/C²
 
-% Nhập số lượng điện tích điểm
-n = input('Nhập số lượng điện tích điểm: ');
+% Nhập các điện tích và vị trí
+n = input('Nhập số lượng điện tích: ');
 
-% Khởi tạo tọa độ và giá trị điện tích
 positions = zeros(n, 2); % Lưu tọa độ (x, y)
 charges = zeros(n, 1);   % Lưu giá trị điện tích
 
-% Nhập dữ liệu từ người dùng
+% Nhập thông tin điện tích
 for i = 1:n
-    fprintf('Nhập tọa độ (x, y) và điện tích của điểm thứ %d:\n', i);
-    positions(i, 1) = input('  x: ');
-    positions(i, 2) = input('  y: ');
+    fprintf('Nhập thông tin cho điện tích thứ %d:\n', i);
+    positions(i, 1) = input('  x (m): ');
+    positions(i, 2) = input('  y (m): ');
     charges(i) = input('  Điện tích (C): ');
 end
 
-% Tính các thành phần lực
-Fx = sym(zeros(n, 1)); % Thành phần lực theo trục x
-Fy = sym(zeros(n, 1)); % Thành phần lực theo trục y
+% Tính lực tổng hợp cho từng điện tích
+forces = zeros(n, 2); % Ma trận lưu lực tổng hợp (Fx, Fy) cho từng điện tích
+magnitudes = zeros(n, 1); % Lưu độ lớn lực tổng hợp cho từng điện tích
 
-% Duyệt qua từng điện tích q0
-syms x y real; % Biến symbolic cho tọa độ
-for i = 1:n
-    % Lấy tọa độ và điện tích của q0
-    x0 = positions(i, 1);
-    y0 = positions(i, 2);
-    q0 = charges(i);
-    
-    % Tính lực từ các điện tích còn lại tác dụng lên q0
-    for j = 1:n
-        if i ~= j
-            % Lấy tọa độ và điện tích của qj
-            xj = positions(j, 1);
-            yj = positions(j, 2);
-            qj = charges(j);
+% Tính lực tác dụng cho từng điện tích
+for target_index = 1:n
+    % Tọa độ và điện tích mục tiêu
+    target_position = positions(target_index, :);
+    target_charge = charges(target_index);
+
+    % Khởi tạo lực tổng hợp
+    Fx_total = 0;
+    Fy_total = 0;
+
+    % Tính lực từ các điện tích khác
+    for i = 1:n
+        if i ~= target_index
+            % Lấy thông tin của điện tích tác dụng
+            source_position = positions(i, :);
+            source_charge = charges(i);
             
-            % Khoảng cách giữa q0 và qj
-            r = sqrt((xj - x0)^2 + (yj - y0)^2);
+            % Tính khoảng cách giữa 2 điện tích
+            dx = source_position(1) - target_position(1);
+            dy = source_position(2) - target_position(2);
+            r = sqrt(dx^2 + dy^2);
             
-            % Thành phần lực
-            Fx(i) = Fx(i) + k * q0 * qj * (xj - x0) / r^3;
-            Fy(i) = Fy(i) + k * q0 * qj * (yj - y0) / r^3;
+            % Tránh chia cho 0 (trường hợp khoảng cách rất nhỏ)
+            if r > 1e-12
+                % Tính lực Coulomb
+                F = k * abs(target_charge * source_charge) / r^2;
+                
+                % Chiếu lực lên các trục
+                Fx = F * (dx / r);
+                Fy = F * (dy / r);
+                
+                % Xác định chiều lực (đẩy hoặc hút)
+                if target_charge * source_charge < 0 % Lực hút
+                    Fx_total = Fx_total + Fx;
+                    Fy_total = Fy_total + Fy;
+                else % Lực đẩy
+                    Fx_total = Fx_total - Fx;
+                    Fy_total = Fy_total - Fy;
+                end
+            end
         end
     end
+
+    % Lưu lực tổng hợp
+    forces(target_index, :) = [Fx_total, Fy_total];
+    magnitudes(target_index) = sqrt(Fx_total^2 + Fy_total^2); % Độ lớn lực
 end
 
-% Hiển thị kết quả
-disp('Các thành phần lực Fx và Fy tại từng điểm:');
-for i = 1:n
-    fprintf('Điểm %d: Fx = %s, Fy = %s\n', i, Fx(i), Fy(i));
-end
+% Tỷ lệ co (scale) cho các vector
+F_max = max(magnitudes); % Lực lớn nhất
+scale = 1 / F_max; % Đặt vector lực lớn nhất hiển thị với độ dài chuẩn
 
-% Vẽ biểu đồ vector lực
+% Vẽ biểu đồ
 figure;
 hold on;
 grid on;
 axis equal;
 xlabel('X (m)');
 ylabel('Y (m)');
-title('Biểu diễn lực tĩnh điện');
-quiver(positions(:, 1), positions(:, 2), double(Fx), double(Fy), 'r', 'LineWidth', 1.5);
-scatter(positions(:, 1), positions(:, 2), 50, 'b', 'filled');
-legend('Lực tĩnh điện', 'Điện tích điểm');
-hold off;
+title('Biểu diễn lực tĩnh điện (có scale)');
 
-% Giữ cửa sổ đồ thị mở
-waitfor(gcf);
+% Vẽ các điện tích
+scatter(positions(:, 1), positions(:, 2), 50, 'filled', 'b'); % Vẽ các điện tích
+text(positions(:, 1) + 0.1, positions(:, 2), arrayfun(@num2str, charges, 'UniformOutput', false)); % Hiển thị giá trị điện tích
+
+% Vẽ lực tổng hợp và thành phần
+for i = 1:n
+    % Vị trí điện tích
+    pos = positions(i, :);
+
+    % Lực tổng hợp
+    Fx = forces(i, 1);
+    Fy = forces(i, 2);
+
+    % Vẽ vector tổng hợp (màu xanh lá cây)
+    quiver(pos(1), pos(2), Fx * scale, Fy * scale, 'g', 'LineWidth', 2, 'MaxHeadSize', 0.7);
+    text(pos(1) + Fx * scale, pos(2) + Fy * scale, ...
+        sprintf('F = %.2e N', magnitudes(i)), 'Color', 'green', 'FontSize', 8);
+
+    % Vẽ thành phần lực theo trục X (màu đỏ)
+    quiver(pos(1), pos(2), Fx * scale, 0, 'r', 'LineWidth', 1, 'MaxHeadSize', 0.7);
+    text(pos(1) + Fx * scale, pos(2), ...
+        sprintf('Fx = %.2e N', Fx), 'Color', 'red', 'FontSize', 8);
+
+    % Vẽ thành phần lực theo trục Y (màu xanh dương)
+    quiver(pos(1), pos(2), 0, Fy * scale, 'b', 'LineWidth', 1, 'MaxHeadSize', 0.7);
+    text(pos(1), pos(2) + Fy * scale, ...
+        sprintf('Fy = %.2e N', Fy), 'Color', 'blue', 'FontSize', 8);
+end
+
+% Hiển thị kết quả cho tất cả điện tích
+disp('Lực tổng hợp tác dụng lên từng điện tích:');
+for i = 1:n
+    fprintf('Điện tích %d: Fx = %.3e N, Fy = %.3e N, F = %.3e N\n', ...
+        i, forces(i, 1), forces(i, 2), magnitudes(i));
+end
+
+legend('Điện tích', 'Lực tổng hợp', 'Thành phần lực theo X', 'Thành phần lực theo Y');
+hold off;
