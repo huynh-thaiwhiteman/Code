@@ -21,8 +21,8 @@ lcd_1.print("HuynhThai");
 delay(2000);
 //set position on LCD: 1 to column: 0,  row: 1
 lcd_1.setCursor(0, 1);
-//print to LCD: 1 Embedded Engineer
-lcd_1.print("Embedded Engineer");
+//print to LCD: Hello World!
+lcd_1.print("Hello World!");
 //wait 2000 miliseconds
 delay(2000);
 //on LCD: 1 clear the screen
