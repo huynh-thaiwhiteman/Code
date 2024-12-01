@@ -1,4 +1,4 @@
-// C++ code
+// C++ code by youtuber
 
 /*LCD Display With I2C Connections:
   VCC ==== +5V
