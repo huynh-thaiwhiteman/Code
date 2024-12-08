@@ -1,1 +1,89 @@
+------------------------------BÀI 1:
+function total_population = population_model(N0, R, S, T)
+% Mô hình dân số
+% N0: Số lượng cá thể ban đầu
+% R: Hàm tốc độ sinh sản
+% S: Hàm tỷ lệ sống sót
+% T: Thời gian
+
+% Tính số cá thể mới sinh ra sau T năm
+num_born = integral(R, 0, T);
+
+% Tính số lượng cá thể sống sót sau T năm
+num_survived = N0 * S(T);
+
+% Tính tổng số lượng cá thể theo lý thuyết
+total_theoretical = num_born + num_survived;
+
+% Tính tổng số lượng cá thể thực tế (dựa trên công thức chính xác)
+integral_term = integral(@(t) S(T-t).*R(t), 0, T);
+total_population = S(T)*N0 + integral_term;
+
+% Hiển thị kết quả
+fprintf('Số cá thể mới sinh ra sau %d năm: %.2f\n', T, num_born);
+fprintf('Số lượng cá thể sống sót sau %d năm: %.2f\n', T, num_survived);
+fprintf('Tổng số lượng cá thể theo lý thuyết (không tính tử vong): %.2f\n', total_theoretical);
+fprintf('Tổng số lượng cá thể thực tế (dựa trên công thức chính xác): %.2f\n', total_population);
+end
+% Gán giá trị cho các tham số
+N0 = 7400;
+R = @(t) 2240 + 60*t;
+S = @(t) 1./(t+1);
+T = 4;
+% Gọi hàm để tính toán
+population_model(N0, R, S, T);
+grid on;
+
+-------------------------------------BÀI 3:
+% Chuong trinh tinh chu vi mien D voi ham x = f(y) va y = g(x)
+clc;
+clear;
+disp('--- Chuong trinh tinh chu vi mien D ---');
+
+% Nhap hai phuong trinh x = f(y) va y = g(x)
+syms x y;
+disp('Nhap phuong trinh 1: x = f(y)');
+f_y = input('Nhap f(y): '); % Phuong trinh theo y
+disp('Nhap phuong trinh 2: y = g(x)');
+g_x = input('Nhap g(x): '); % Phuong trinh theo x
+
+% Tim giao diem cua hai duong cong
+disp('Dang tim giao diem cua hai duong cong...');
+eq1 = x - f_y; % Phuong trinh x = f(y)
+eq2 = y - g_x; % Phuong trinh y = g(x)
+
+% Giai de tim giao diem
+[sol_x, sol_y] = solve([eq1 == 0, eq2 == 0], [x, y]);
+
+% Chuyen ket qua thanh so thuc
+sol_x = double(sol_x);
+sol_y = double(sol_y);
+
+% Tim y_min va y_max tu cac giao diem
+y_min = min(sol_y);
+y_max = max(sol_y);
+
+% Hien thi ket qua giao diem va gioi han
+disp('Giao diem cua hai duong cong: ');
+disp(table(sol_x, sol_y));
+disp(['Gia tri y_min: ', num2str(y_min)]);
+disp(['Gia tri y_max: ', num2str(y_max)]);
+
+% Tinh chu vi mien D
+disp('Dang tinh chu vi mien D...');
+
+% Tinh do dai cua x = f(y)
+L1 = int(sqrt(1 + diff(f_y, y)^2), y, y_min, y_max);
+
+% Tinh gioi han x_min va x_max dua vao g_x
+x_min = double(subs(f_y, y, y_min)); % Thay f(y) cho x_min
+x_max = double(subs(f_y, y, y_max)); % Thay f(y) cho x_max
+
+% Tinh do dai cua y = g(x)
+L2 = int(sqrt(1 + diff(g_x, x)^2), x, x_min, x_max);
+% Chu vi
+Chu_vi = double(L1 + L2);
+
+% Hien thi ket qua
+disp(['Chu vi mien D la: ', num2str(Chu_vi)]);
 
